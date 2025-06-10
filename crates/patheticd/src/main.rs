@@ -22,5 +22,5 @@ fn main() {
     if backend.is_err() {
         panic!("Could not start backend {}, got error.", &config.backend);
     }
-    let mut backend = backend.unwrap();
+    let (mut backend, updated) = backend.unwrap();
 }

@@ -17,6 +17,7 @@ struct PatheticClient {
 pub struct Hyprland {
     clients: HashMap<Address, PatheticClient>,
     focus: Address,
+    updated: Arc<Condvar>
 }
 
 impl Backend for Hyprland {
@@ -24,11 +25,12 @@ impl Backend for Hyprland {
         return &self.updated;
     }
 
-    fn init() -> Result<(Arc<Mutex<Self>>, Condvar), PatheticError> {
-        let backend = Arc::new(Mutex::new(Hyprland {
+    fn init() -> Result<(Arc<Mutex<Self>>, Arc<Condvar>), PatheticError> {
+        let updated = Arc::new(Condvar::new());
+        let backend = Arc::new(Mutex::new( Hyprland {
             clients: HashMap::new(),
             focus: Address::new("".to_string()),
-            updated: Condvar::new()
+            updated: updated.clone()
         }));
 
         // get inital state of clients
@@ -105,6 +107,6 @@ impl Backend for Hyprland {
             return Err(PatheticError::ThreadInitFailiure(result.unwrap_err()))
         }
 
-        return Ok(backend)
+        return Ok((backend, updated))
     }
 }

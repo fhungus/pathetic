@@ -1,11 +1,11 @@
 use crate::backends::backend_traits::Backend;
 use crate::backends::hyprland::Hyprland;
 use crate::error::PatheticError;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, Condvar};
 
-pub fn get_backend(id: &str) -> Result<Arc<Mutex<impl Backend>>, PatheticError> { 
+pub fn get_backend(id: &str) -> Result<(Arc<Mutex<impl Backend>>, Arc<Condvar>), PatheticError> { 
     match id {
         "hyprland" => { return Hyprland::init(); },
-        _ => { panic!("No backend named {id}") }
+        _ => { panic!("No backend named {id}") } // TODO: proper error handling
     }
 }
