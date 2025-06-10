@@ -1,0 +1,36 @@
+NEEDS:
+    active windows
+    selected window
+
+    hyprland-rs crate
+        events
+            manipulate state
+        data
+            get current state inital startup of application 
+
+THINGS IN BETWEEN:
+    BACKEND:
+        just hyprland 😔
+            init -> hyprland-rs data -> initialized
+            thread (where?) -> wait for events -> send through thread
+            channel for this thread to connect to poster
+    POSTER:
+        for each update in backend channel 
+        std::net:TcpStream connect to output:3535
+        write to stream
+        get output and validate that everything works
+        if it don't, write to log!!
+
+OUTPUT:
+    post to server on event change
+
+    std
+        std::net::TcpStream
+
+wenomech@inasa.ma
+wenomecha.inasa.ma
+
+this thing -> rust backend (data) <-----> evil ass ai 🤖🤖🤖
+                     ^   |
+                     |   v
+                svelte frontend 

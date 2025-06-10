@@ -1,0 +1,2 @@
+backend = "hyprland"
+do_not_show = ["kitty"]
