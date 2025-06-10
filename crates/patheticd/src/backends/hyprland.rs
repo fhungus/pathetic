@@ -34,9 +34,7 @@ impl Backend for Hyprland {
         }));
 
         // get inital state of clients
-        let clients = Clients::get();
-        if clients.is_err() { return Err(PatheticError::HyprError(clients.unwrap_err())); }
-        let clients = clients.unwrap();
+        let clients = Clients::get()?;
 
         for i in clients {
             let client = PatheticClient {
@@ -59,13 +57,13 @@ impl Backend for Hyprland {
                 let mut event_listener = EventListener::new();
 
                 let active_window_thread_backend = thread_backend.clone();
-                event_listener.add_active_window_change_handler(move |data| {
+                event_listener.add_active_window_changed_handler(move |data| {
                     if data.is_none() {
                         println!("[HYPRLAND_BACKEND]: Active window change handler got an empty event!");
                         return;
                     }
                     let data = data.unwrap();
-                    let new_window = data.window_address;
+                    let new_window = data.address;
 
                     let mut locked = get_lock(&active_window_thread_backend);
                     locked.focus = new_window;
@@ -73,7 +71,7 @@ impl Backend for Hyprland {
                 });
 
                 let window_close_thread_backend = thread_backend.clone();
-                event_listener.add_window_close_handler(move |data| {
+                event_listener.add_window_closed_handler(move |data| {
                     let mut locked = get_lock(&window_close_thread_backend);
                     let found = locked.clients.get(&data);
 
@@ -88,7 +86,7 @@ impl Backend for Hyprland {
                 });
                 
                 let window_open_thread_backend = thread_backend.clone();
-                event_listener.add_window_open_handler(move |data| {
+                event_listener.add_window_opened_handler(move |data| {
                     let mut locked = get_lock(&window_open_thread_backend);
                     locked.clients.insert(data.window_address.clone(), PatheticClient {
                         title: data.window_title

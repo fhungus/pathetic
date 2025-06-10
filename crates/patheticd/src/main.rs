@@ -1,15 +1,20 @@
 use std::fs;
 
-use patheticd::backends::backend_traits::Backend;
+use hyprland::shared::{HyprData, Address, HyprDataActive, HyprDataActiveOptional};
+use hyprland::data::Clients;
 use patheticd::backends::select::get_backend;
 use patheticd::config;
 
+// epic procmacro because im a big stupid baby
+#[warn(clippy::pedantic, clippy::nursery)]
 fn main() {
     let paths: Vec<&str> = vec![
         "./patheticd.toml",
         "~/.config/pathetic/patheticd.toml",
         "~/.config/patheticd.toml"
     ];
+    
+    let clients = Clients::get().unwrap();
     
     let mut config = config::defaults();
     for i in paths {
@@ -19,8 +24,7 @@ fn main() {
     }
 
     let backend = get_backend(&config.backend);
-    if backend.is_err() {
-        panic!("Could not start backend {}, got error.", &config.backend);
-    }
+    assert!(backend.is_ok(), "Could not start backend {}, got error.", &config.backend);
+
     let (mut backend, updated) = backend.unwrap();
 }

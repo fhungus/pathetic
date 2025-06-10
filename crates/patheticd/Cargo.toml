@@ -6,6 +6,6 @@ edition = "2024"
 [dependencies]
 clap = "4.5.39"
 derive_more = { version = "2", features = ["debug", "display"] }
-hyprland = "0.3.13"
+hyprland = "0.4.0-beta.2"
 tokio = "1.45.1"
 toml = "0.8.23"

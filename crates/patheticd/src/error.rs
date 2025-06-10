@@ -9,3 +9,9 @@ pub enum PatheticError {
     ThreadInitFailiure(Error),
     ServerConnectionFailed
 }
+
+impl From<HyprError> for PatheticError {
+    fn from(value: HyprError) -> Self {
+        return PatheticError::HyprError(value);
+    }
+}
