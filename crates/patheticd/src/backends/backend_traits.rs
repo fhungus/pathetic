@@ -1,8 +1,17 @@
 use crate::error::PatheticError;
-use std::sync::{Arc, Condvar, Mutex};
+use std::{collections::HashMap, sync::{Arc, Mutex, mpsc}};
 
-pub trait Backend
+pub struct PatheticClient {
+    pub title: String, 
+}
+
+#[derive(Debug, Clone)]
+pub struct BackendOutput {
+    pub clients: HashMap<String, PatheticClient>,
+    pub focused: String
+}
+
+pub trait Backend: Send + Sync
 {
-    fn get_updated(&self) -> &Condvar;
-    fn init() -> Result<(Arc<Mutex<Self>>, Arc<Condvar>), PatheticError>;
+    fn init() -> Result<(Arc<Mutex<Self>>, mpsc::Receiver<BackendOutput>), PatheticError>;
 }

@@ -1,9 +1,8 @@
 use std::fs;
 
-use hyprland::shared::{HyprData, Address, HyprDataActive, HyprDataActiveOptional};
-use hyprland::data::Clients;
 use patheticd::backends::select::get_backend;
 use patheticd::config;
+use patheticd::error::PatheticError;
 
 // epic procmacro because im a big stupid baby
 #[warn(clippy::pedantic, clippy::nursery)]
@@ -14,8 +13,6 @@ fn main() {
         "~/.config/patheticd.toml"
     ];
     
-    let clients = Clients::get().unwrap();
-    
     let mut config = config::defaults();
     for i in paths {
         if fs::exists(i).unwrap() {
@@ -25,6 +22,16 @@ fn main() {
 
     let backend = get_backend(&config.backend);
     assert!(backend.is_ok(), "Could not start backend {}, got error.", &config.backend);
+    let (backend, updated) = backend.unwrap();
 
-    let (mut backend, updated) = backend.unwrap();
+    loop {
+        match updated.recv() {
+            Ok(data) => {
+                
+            },
+            Err(e) => {
+                warn!("{}", PatheticError::ThreadConnectionFaliure(e));
+            }
+        }
+    }
 }
