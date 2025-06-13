@@ -27,10 +27,16 @@ fn main() {
     loop {
         match updated.recv() {
             Ok(data) => {
-                
+                let locked = data.lock().unwrap();
+                println!("focused: {}", locked.clients.get(&locked.focused).unwrap().title);
+                println!("windows:");
+                for (address, window) in locked.clients.iter() {
+                    println!("  title: {}", &window.title);
+                    println!("  address: {}", &address);
+                }
             },
             Err(e) => {
-                warn!("{}", PatheticError::ThreadConnectionFaliure(e));
+                println!("{}", PatheticError::ThreadConnectionFaliure(e));
             }
         }
     }

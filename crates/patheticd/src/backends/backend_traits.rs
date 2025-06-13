@@ -5,7 +5,6 @@ pub struct PatheticClient {
     pub title: String, 
 }
 
-#[derive(Debug, Clone)]
 pub struct BackendOutput {
     pub clients: HashMap<String, PatheticClient>,
     pub focused: String
@@ -13,5 +12,13 @@ pub struct BackendOutput {
 
 pub trait Backend: Send + Sync
 {
-    fn init() -> Result<(Arc<Mutex<Self>>, mpsc::Receiver<BackendOutput>), PatheticError>;
+    fn init() -> Result<(
+        Arc<
+            Mutex<
+                Self>>, 
+        mpsc::Receiver<
+            Arc<
+                Mutex<
+                    BackendOutput>>>), 
+        PatheticError>;
 }
