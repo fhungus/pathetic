@@ -1,7 +1,8 @@
 use std::fs;
+use std::sync::Arc;
 
 use patheticd::backends::select::get_backend;
-use patheticd::config;
+use patheticd::config::{self, Config};
 use patheticd::error::PatheticError;
 
 // epic procmacro because im a big stupid baby
@@ -20,19 +21,23 @@ fn main() {
         }
     }
 
-    let backend = get_backend(&config.backend);
-    assert!(backend.is_ok(), "Could not start backend {}, got error.", &config.backend);
-    let (backend, updated) = backend.unwrap();
+    let shared_config: Arc<Config> = Arc::new(config);
+
+    let backend = get_backend(shared_config.clone());
+    assert!(backend.is_ok(), "Could not start backend {}, got error.", &shared_config.backend);
+    let (_backend, updated) = backend.unwrap();
 
     loop {
         match updated.recv() {
             Ok(data) => {
                 let locked = data.lock().unwrap();
-                println!("focused: {}", locked.clients.get(&locked.focused).unwrap().title);
-                println!("windows:");
-                for (address, window) in locked.clients.iter() {
-                    println!("  title: {}", &window.title);
-                    println!("  address: {}", &address);
+                match &locked.focused {
+                    Some(i) => {
+                        println!("focused window: {}", locked.clients.get(i).unwrap().title);
+                    },
+                    None => {
+                        println!("lets justr say... im leagueing it")
+                    }
                 }
             },
             Err(e) => {
